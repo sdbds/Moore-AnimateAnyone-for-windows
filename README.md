@@ -80,27 +80,19 @@ Install with Powershell run `install.ps1` or `install-cn.ps1`(for Chinese)
 Add loading local safetensors or ckpt,you can change `config/prompts/animation.yaml` about `pretrained_model_path` for your local SD1.5 model.
 such as `"D:\\stablediffusion-webui\\models\Stable-diffusion\\v1-5-pruned.ckpt"`
 
-## 🎨 Gradio Demo 
+## No need Download models manually
+~~Download weights~~
 
-#### Local Gradio Demo:
-Launch local gradio demo on GPU:
+~~Download our trained [weights](https://huggingface.co/patrolli/AnimateAnyone/tree/main), which include four parts: `denoising_unet.pth`, `reference_unet.pth`, `pose_guider.pth` and `motion_module.pth`.~~
 
-Powershell run with `run_gui.ps1`
+~~Download pretrained weight of based models and other components:~~ 
+~~- [StableDiffusion V1.5](https://huggingface.co/runwayml/stable-diffusion-v1-5)~~
+~~- [sd-vae-ft-mse](https://huggingface.co/stabilityai/sd-vae-ft-mse)~~
+~~- [image_encoder](https://huggingface.co/lambdalabs/sd-image-variations-diffusers/tree/main/image_encoder)~~
 
-Then open gradio demo in local browser.
+~~Download dwpose weights (`dw-ll_ucoco_384.onnx`, `yolox_l.onnx`) following [this](https://github.com/IDEA-Research/DWPose?tab=readme-ov-file#-dwpose-for-controlnet).~~
 
-## Download weights
-
-Download our trained [weights](https://huggingface.co/patrolli/AnimateAnyone/tree/main), which include four parts: `denoising_unet.pth`, `reference_unet.pth`, `pose_guider.pth` and `motion_module.pth`.
-
-Download pretrained weight of based models and other components: 
-- [StableDiffusion V1.5](https://huggingface.co/runwayml/stable-diffusion-v1-5)
-- [sd-vae-ft-mse](https://huggingface.co/stabilityai/sd-vae-ft-mse)
-- [image_encoder](https://huggingface.co/lambdalabs/sd-image-variations-diffusers/tree/main/image_encoder)
-
-Download dwpose weights (`dw-ll_ucoco_384.onnx`, `yolox_l.onnx`) following [this](https://github.com/IDEA-Research/DWPose?tab=readme-ov-file#-dwpose-for-controlnet).
-
-Put these weights under a directory, like `./pretrained_weights`, and orgnize them as follows:
+~~Put these weights under a directory, like `./pretrained_weights`, and orgnize them as follows:~~
 
 ```text
 ./pretrained_weights/
@@ -128,7 +120,7 @@ Put these weights under a directory, like `./pretrained_weights`, and orgnize th
     `-- v1-inference.yaml
 ```
 
-Note: If you have installed some of the pretrained models, such as `StableDiffusion V1.5`, you can specify their paths in the config file (e.g. `./config/prompts/animation.yaml`).
+~~Note: If you have installed some of the pretrained models, such as `StableDiffusion V1.5`, you can specify their paths in the config file (e.g. `./config/prompts/animation.yaml`).~~
 
 # 🚀 Inference 
 
@@ -144,11 +136,14 @@ You can refer the format of `animation.yaml` to add your own reference images or
 python tools/vid2pose.py --video_path /path/to/your/video.mp4
 ```
 
-# 🎨 Gradio Demo
+# 🎨 Gradio Demo 
 
-You can run a local gradio app via following commands:
+### Local Gradio Demo:
+Launch local gradio demo on GPU:
 
-`python app.py`
+Powershell run with `run_gui.ps1`
+
+Then open gradio demo in local browser.
 
 # 🖌️ Try on Mobi MaLiang
 
