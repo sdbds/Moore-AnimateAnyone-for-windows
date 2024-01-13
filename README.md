@@ -51,17 +51,43 @@ These issues will be addressed and improved in the near future. We appreciate yo
 
 # ⚒️ Installation
 
-## Build Environtment
+prerequisites: `3.11>=python>=3.8`, `CUDA>=11.3`, `ffmpeg` and `git`.
 
-We Recommend a python version `>=3.10` and cuda version `=11.7`. Then build environment as follows:
+Python and Git:
 
-```shell
-# [Optional] Create a virtual env
-python -m venv .venv
-source .venv/bin/activate
-# Install with pip:
-pip install -r requirements.txt
+- Python 3.10.11: https://www.python.org/ftp/python/3.10.11/python-3.10.11-amd64.exe
+- git: https://git-scm.com/download/win
+
+- Install [ffmpeg](https://ffmpeg.org/) for your operating system
+  (https://www.geeksforgeeks.org/how-to-install-ffmpeg-on-windows/)
+  
+  notice:step 4 use windows system Set Enviroment Path.
+
+Give unrestricted script access to powershell so venv can work:
+
+- Open an administrator powershell window
+- Type `Set-ExecutionPolicy Unrestricted` and answer A
+- Close admin powershell window
+
 ```
+git clone --recurse-submodules https://github.com/sdbds/magic-animate-for-windows/
+```
+
+Install with Powershell run `install.ps1` or `install-cn.ps1`(for Chinese)
+
+### Use local model
+
+Add loading local safetensors or ckpt,you can change `config/prompts/animation.yaml` about `pretrained_model_path` for your local SD1.5 model.
+such as `"D:\\stablediffusion-webui\\models\Stable-diffusion\\v1-5-pruned.ckpt"`
+
+## 🎨 Gradio Demo 
+
+#### Local Gradio Demo:
+Launch local gradio demo on GPU:
+
+Powershell run with `run_gui.ps1`
+
+Then open gradio demo in local browser.
 
 ## Download weights
 
