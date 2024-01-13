@@ -51,7 +51,7 @@ These issues will be addressed and improved in the near future. We appreciate yo
 
 # ⚒️ Installation
 
-prerequisites: `python>=3.8`, `CUDA>=11.3`, `ffmpeg` and `git`.
+prerequisites: `3.11>=python>=3.8`, `CUDA>=11.3`, `ffmpeg` and `git`.
 
 Python and Git:
 
