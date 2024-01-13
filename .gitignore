@@ -1,4 +1,7 @@
 __pycache__/
 pretrained_weights/
 output/
+outputs/
 .venv/
+venv/
+huggingface/

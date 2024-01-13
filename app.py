@@ -6,12 +6,14 @@ import gradio as gr
 import numpy as np
 import torch
 from diffusers import AutoencoderKL, DDIMScheduler
+from diffusers.models.attention_processor import AttnProcessor2_0
 from einops import repeat
 from omegaconf import OmegaConf
 from PIL import Image
 from torchvision import transforms
 from transformers import CLIPVisionModelWithProjection
 
+from src.models.model_util import load_models, torch_gc, get_torch_device
 from src.models.pose_guider import PoseGuider
 from src.models.unet_2d_condition import UNet2DConditionModel
 from src.models.unet_3d import UNet3DConditionModel
@@ -42,17 +44,33 @@ class AnimateController:
         seed=123,
     ):
         generator = torch.manual_seed(seed)
+        self.device = get_torch_device()
         if isinstance(ref_image, np.ndarray):
             ref_image = Image.fromarray(ref_image)
-        if self.pipeline is None:
-            vae = AutoencoderKL.from_pretrained(
-                self.config.pretrained_vae_path,
-            ).to("cuda", dtype=self.weight_dtype)
+            if self.pipeline is None:
+                (
+                    self.tokenizer,
+                    self.text_encoder,
+                    self.unet,
+                    noise_scheduler,
+                    self.vae,
+                ) = load_models(
+                    self.config.pretrained_base_model_path,
+                    scheduler_name="",
+                    v2=False,
+                    v_pred=False,
+                    weight_dtype=self.weight_dtype,
+                )
+            vae = self.vae.to(self.device, dtype=self.weight_dtype)
+            reference_unet = self.unet.to(dtype=self.weight_dtype, device=self.device)
+            # vae = AutoencoderKL.from_pretrained(
+            #      self.config.pretrained_base_model_path, subfolder="vae"
+            #  ).to(self.device, dtype=self.weight_dtype)
 
-            reference_unet = UNet2DConditionModel.from_pretrained(
-                self.config.pretrained_base_model_path,
-                subfolder="unet",
-            ).to(dtype=self.weight_dtype, device="cuda")
+            # reference_unet = UNet2DConditionModel.from_pretrained(
+            #     self.config.pretrained_base_model_path,
+            #     subfolder="unet",
+            # ).to(dtype=self.weight_dtype, device=self.device)
 
             inference_config_path = self.config.inference_config
             infer_config = OmegaConf.load(inference_config_path)
@@ -61,15 +79,15 @@ class AnimateController:
                 self.config.motion_module_path,
                 subfolder="unet",
                 unet_additional_kwargs=infer_config.unet_additional_kwargs,
-            ).to(dtype=self.weight_dtype, device="cuda")
+            ).to(dtype=self.weight_dtype, device=self.device)
 
             pose_guider = PoseGuider(320, block_out_channels=(16, 32, 96, 256)).to(
-                dtype=self.weight_dtype, device="cuda"
+                dtype=self.weight_dtype, device=self.device
             )
 
             image_enc = CLIPVisionModelWithProjection.from_pretrained(
                 self.config.image_encoder_path
-            ).to(dtype=self.weight_dtype, device="cuda")
+            ).to(dtype=self.weight_dtype, device=self.device)
             sched_kwargs = OmegaConf.to_container(infer_config.noise_scheduler_kwargs)
             scheduler = DDIMScheduler(**sched_kwargs)
 
@@ -81,9 +99,13 @@ class AnimateController:
             reference_unet.load_state_dict(
                 torch.load(self.config.reference_unet_path, map_location="cpu"),
             )
+
             pose_guider.load_state_dict(
                 torch.load(self.config.pose_guider_path, map_location="cpu"),
             )
+
+            denoising_unet.set_attn_processor(AttnProcessor2_0())
+            reference_unet.set_attn_processor(AttnProcessor2_0())
 
             pipe = Pose2VideoPipeline(
                 vae=vae,
@@ -93,7 +115,7 @@ class AnimateController:
                 pose_guider=pose_guider,
                 scheduler=scheduler,
             )
-            pipe = pipe.to("cuda", dtype=self.weight_dtype)
+            pipe = pipe.to(self.device, dtype=self.weight_dtype)
             self.pipeline = pipe
 
         pose_images = read_frames(pose_video_path)
@@ -142,7 +164,7 @@ class AnimateController:
             fps=src_fps,
         )
 
-        torch.cuda.empty_cache()
+        torch_gc()
 
         return out_path
 

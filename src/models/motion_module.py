@@ -10,6 +10,7 @@ from diffusers.utils import BaseOutput
 from diffusers.utils.import_utils import is_xformers_available
 from einops import rearrange, repeat
 from torch import nn
+from src.models.model_util import get_torch_device
 
 
 def zero_module(module):
@@ -329,9 +330,9 @@ class VersatileAttention(Attention):
                 try:
                     # Make sure we can run the memory efficient attention
                     _ = xformers.ops.memory_efficient_attention(
-                        torch.randn((1, 2, 40), device="cuda"),
-                        torch.randn((1, 2, 40), device="cuda"),
-                        torch.randn((1, 2, 40), device="cuda"),
+                        torch.randn((1, 2, 40), device=get_torch_device()),
+                        torch.randn((1, 2, 40), device=get_torch_device()),
+                        torch.randn((1, 2, 40), device=get_torch_device()),
                     )
                 except Exception as e:
                     raise e

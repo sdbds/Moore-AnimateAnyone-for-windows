@@ -4,6 +4,7 @@ from pathlib import Path
 
 from src.utils.util import get_fps, read_frames, save_videos_from_pil
 import numpy as np
+from src.models.model_util import get_torch_device
 
 
 if __name__ == "__main__":
@@ -23,7 +24,7 @@ if __name__ == "__main__":
     out_path = os.path.join(dir_path, video_name + "_kps.mp4")
 
     detector = DWposeDetector()
-    detector = detector.to(f"cuda")
+    detector = detector.to(get_torch_device())
 
     fps = get_fps(args.video_path)
     frames = read_frames(args.video_path)

@@ -1,0 +1,3 @@
+[submodule "video_controlnet_aux"]
+	path = video_controlnet_aux
+	url = https://github.com/sdbds/video_controlnet_aux
