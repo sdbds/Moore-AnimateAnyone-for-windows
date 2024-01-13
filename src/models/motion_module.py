@@ -233,6 +233,7 @@ class TemporalTransformerBlock(nn.Module):
 
         self.ff = FeedForward(dim, dropout=dropout, activation_fn=activation_fn)
         self.ff_norm = nn.LayerNorm(dim)
+        self.device = get_torch_device()
 
     def forward(
         self,
@@ -330,9 +331,9 @@ class VersatileAttention(Attention):
                 try:
                     # Make sure we can run the memory efficient attention
                     _ = xformers.ops.memory_efficient_attention(
-                        torch.randn((1, 2, 40), device=get_torch_device()),
-                        torch.randn((1, 2, 40), device=get_torch_device()),
-                        torch.randn((1, 2, 40), device=get_torch_device()),
+                        torch.randn((1, 2, 40), device=self.device),
+                        torch.randn((1, 2, 40), device=self.device),
+                        torch.randn((1, 2, 40), device=self.device),
                     )
                 except Exception as e:
                     raise e

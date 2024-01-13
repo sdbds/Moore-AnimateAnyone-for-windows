@@ -40,6 +40,8 @@ def parse_args():
 
 
 def main():
+    device = get_torch_device()
+
     args = parse_args()
 
     config = OmegaConf.load(args.config)
@@ -51,12 +53,12 @@ def main():
 
     vae = AutoencoderKL.from_pretrained(
         config.pretrained_vae_path,
-    ).to(get_torch_device(), dtype=weight_dtype)
+    ).to(device, dtype=weight_dtype)
 
     reference_unet = UNet2DConditionModel.from_pretrained(
         config.pretrained_base_model_path,
         subfolder="unet",
-    ).to(dtype=weight_dtype, device=get_torch_device())
+    ).to(dtype=weight_dtype, device=device)
 
     inference_config_path = config.inference_config
     infer_config = OmegaConf.load(inference_config_path)
@@ -65,15 +67,15 @@ def main():
         config.motion_module_path,
         subfolder="unet",
         unet_additional_kwargs=infer_config.unet_additional_kwargs,
-    ).to(dtype=weight_dtype, device=get_torch_device())
+    ).to(dtype=weight_dtype, device=device)
 
     pose_guider = PoseGuider(320, block_out_channels=(16, 32, 96, 256)).to(
-        dtype=weight_dtype, device=get_torch_device()
+        dtype=weight_dtype, device=device
     )
 
     image_enc = CLIPVisionModelWithProjection.from_pretrained(
         config.image_encoder_path
-    ).to(dtype=weight_dtype, device=get_torch_device())
+    ).to(dtype=weight_dtype, device=device)
 
     sched_kwargs = OmegaConf.to_container(infer_config.noise_scheduler_kwargs)
     scheduler = DDIMScheduler(**sched_kwargs)
@@ -102,7 +104,7 @@ def main():
         pose_guider=pose_guider,
         scheduler=scheduler,
     )
-    pipe = pipe.to(get_torch_device(), dtype=weight_dtype)
+    pipe = pipe.to(device, dtype=weight_dtype)
 
     date_str = datetime.now().strftime("%Y%m%d")
     time_str = datetime.now().strftime("%H%M")

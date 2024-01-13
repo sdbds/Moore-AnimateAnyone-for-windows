@@ -49,10 +49,10 @@ class AnimateController:
             ref_image = Image.fromarray(ref_image)
             if self.pipeline is None:
                 (
-                    self.tokenizer,
-                    self.text_encoder,
+                    _,
+                    _,
                     self.unet,
-                    noise_scheduler,
+                    _,
                     self.vae,
                 ) = load_models(
                     self.config.pretrained_base_model_path,
@@ -61,59 +61,51 @@ class AnimateController:
                     v_pred=False,
                     weight_dtype=self.weight_dtype,
                 )
-            vae = self.vae.to(self.device, dtype=self.weight_dtype)
-            reference_unet = self.unet.to(dtype=self.weight_dtype, device=self.device)
-            # vae = AutoencoderKL.from_pretrained(
-            #      self.config.pretrained_base_model_path, subfolder="vae"
-            #  ).to(self.device, dtype=self.weight_dtype)
-
-            # reference_unet = UNet2DConditionModel.from_pretrained(
-            #     self.config.pretrained_base_model_path,
-            #     subfolder="unet",
-            # ).to(dtype=self.weight_dtype, device=self.device)
+            self.vae = self.vae.to(self.device, dtype=self.weight_dtype)
+            self.reference_unet = self.unet.to(dtype=self.weight_dtype, device=self.device)
 
             inference_config_path = self.config.inference_config
             infer_config = OmegaConf.load(inference_config_path)
-            denoising_unet = UNet3DConditionModel.from_pretrained_2d(
+            self.denoising_unet = UNet3DConditionModel.from_pretrained_2d(
                 self.config.pretrained_base_model_path,
                 self.config.motion_module_path,
                 subfolder="unet",
                 unet_additional_kwargs=infer_config.unet_additional_kwargs,
             ).to(dtype=self.weight_dtype, device=self.device)
 
-            pose_guider = PoseGuider(320, block_out_channels=(16, 32, 96, 256)).to(
+            self.pose_guider = PoseGuider(320, block_out_channels=(16, 32, 96, 256)).to(
                 dtype=self.weight_dtype, device=self.device
             )
 
-            image_enc = CLIPVisionModelWithProjection.from_pretrained(
+            self.image_enc = CLIPVisionModelWithProjection.from_pretrained(
                 self.config.image_encoder_path
             ).to(dtype=self.weight_dtype, device=self.device)
             sched_kwargs = OmegaConf.to_container(infer_config.noise_scheduler_kwargs)
-            scheduler = DDIMScheduler(**sched_kwargs)
+            self.scheduler = DDIMScheduler(**sched_kwargs)
 
             # load pretrained weights
-            denoising_unet.load_state_dict(
+            self.denoising_unet.load_state_dict(
                 torch.load(self.config.denoising_unet_path, map_location="cpu"),
                 strict=False,
             )
-            reference_unet.load_state_dict(
+            self.reference_unet.load_state_dict(
                 torch.load(self.config.reference_unet_path, map_location="cpu"),
             )
 
-            pose_guider.load_state_dict(
+            self.pose_guider.load_state_dict(
                 torch.load(self.config.pose_guider_path, map_location="cpu"),
             )
 
-            denoising_unet.set_attn_processor(AttnProcessor2_0())
-            reference_unet.set_attn_processor(AttnProcessor2_0())
+            self.denoising_unet.set_attn_processor(AttnProcessor2_0())
+            self.reference_unet.set_attn_processor(AttnProcessor2_0())
 
             pipe = Pose2VideoPipeline(
-                vae=vae,
-                image_encoder=image_enc,
-                reference_unet=reference_unet,
-                denoising_unet=denoising_unet,
-                pose_guider=pose_guider,
-                scheduler=scheduler,
+                vae=self.vae,
+                image_encoder=self.image_enc,
+                reference_unet=self.reference_unet,
+                denoising_unet=self.denoising_unet,
+                pose_guider=self.pose_guider,
+                scheduler=self.scheduler,
             )
             pipe = pipe.to(self.device, dtype=self.weight_dtype)
             self.pipeline = pipe
@@ -163,7 +155,11 @@ class AnimateController:
             n_rows=3,
             fps=src_fps,
         )
-
+        self.vae.to("cpu")
+        self.image_enc.to("cpu")
+        self.reference_unet.to("cpu")
+        self.denoising_unet.to("cpu")
+        self.pose_guider.to("cpu")
         torch_gc()
 
         return out_path
