@@ -77,8 +77,8 @@ Install with Powershell run `install.ps1` or `install-cn.ps1`(for Chinese)
 
 ### Use local model
 
-Add loading local safetensors or ckpt,you can change `config/prompts/animation.yaml` about `pretrained_model_path` for your local SD1.5 model.
-such as `"D:\\stablediffusion-webui\\models\Stable-diffusion\\v1-5-pruned.ckpt"`
+Add loading local safetensors or ckpt,you can change `config/prompts/animation.yaml` about `pretrained_weights` for your local SD1.5 model.
+such as `"D:\\stablediffusion-webui\\models\\Stable-diffusion\\v1-5-pruned.ckpt"`
 
 ## No need Download models manually
 ~~Download weights~~
