@@ -1,5 +1,7 @@
 # 🤗 Introduction
 
+**update**：🔥🔥🔥We launch a HuggingFace Spaces demo of Moore-AnimateAnyone at [here](https://huggingface.co/spaces/xunsong/Moore-AnimateAnyone)!!
+
 This repository reproduces [AnimateAnyone](https://github.com/HumanAIGC/AnimateAnyone). To align the results demonstrated by the original paper, we adopt various approaches and tricks, which may differ somewhat from the paper and another [implementation](https://github.com/guoqincode/Open-AnimateAnyone). 
 
 It's worth noting that this is a very preliminary version, aiming for approximating the performance (roughly 80% under our test) showed in [AnimateAnyone](https://github.com/HumanAIGC/AnimateAnyone). 
@@ -139,11 +141,21 @@ python tools/vid2pose.py --video_path /path/to/your/video.mp4
 # 🎨 Gradio Demo 
 
 ### Local Gradio Demo:
+
 Launch local gradio demo on GPU:
 
 Powershell run with `run_gui.ps1`
 
 Then open gradio demo in local browser.
+
+### Online Gradio Demo:
+
+**HuggingFace Demo**: We launch a quick preview demo of Moore-AnimateAnyone at [HuggingFace Spaces](https://huggingface.co/spaces/xunsong/Moore-AnimateAnyone)!!
+We appreciate the assistance provided by the HuggingFace team in setting up this demo.
+
+To reduce waiting time, we limit the size (width, height, and length) and inference steps when generating videos. 
+
+If you have your own GPU resource (>= 16GB vram), you can run a local gradio app via following commands:
 
 # 🖌️ Try on Mobi MaLiang
 
