@@ -70,7 +70,7 @@ Give unrestricted script access to powershell so venv can work:
 - Close admin powershell window
 
 ```
-git clone --recurse-submodules https://github.com/sdbds/magic-animate-for-windows/
+git clone --recurse-submodules https://github.com/sdbds/Moore-AnimateAnyone-for-windows/
 ```
 
 Install with Powershell run `install.ps1` or `install-cn.ps1`(for Chinese)
