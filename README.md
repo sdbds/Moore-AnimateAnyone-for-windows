@@ -151,6 +151,7 @@ Then open gradio demo in local browser.
 ### Online Gradio Demo:
 
 **HuggingFace Demo**: We launch a quick preview demo of Moore-AnimateAnyone at [HuggingFace Spaces](https://huggingface.co/spaces/xunsong/Moore-AnimateAnyone)!!
+
 We appreciate the assistance provided by the HuggingFace team in setting up this demo.
 
 To reduce waiting time, we limit the size (width, height, and length) and inference steps when generating videos. 
