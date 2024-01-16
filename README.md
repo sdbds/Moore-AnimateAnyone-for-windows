@@ -108,10 +108,6 @@ such as `"D:\\stablediffusion-webui\\models\\Stable-diffusion\\v1-5-pruned.ckpt"
 |-- motion_module.pth
 |-- pose_guider.pth
 |-- reference_unet.pth
-|-- sd-vae-ft-mse
-|   |-- config.json
-|   |-- diffusion_pytorch_model.bin
-|   `-- diffusion_pytorch_model.safetensors
 `-- stable-diffusion-v1-5
     |-- feature_extractor
     |   `-- preprocessor_config.json
