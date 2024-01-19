@@ -643,18 +643,22 @@ class UNet3DConditionModel(ModelMixin, ConfigMixin):
 
         model = cls.from_config(unet_config, **unet_additional_kwargs)
         # load the vanilla weights
-        if str(pretrained_model_path).endswith(".safetensors"):
+        #if str(pretrained_model_path).endswith(".safetensors"):
+        if pretrained_model_path.joinpath(SAFETENSORS_WEIGHTS_NAME).exists():
             logger.debug(
                 f"loading safeTensors weights from {pretrained_model_path} ..."
             )
             state_dict = load_file(
-                pretrained_model_path, device="cpu"
+                #pretrained_model_path, device="cpu"
+                pretrained_model_path.joinpath(SAFETENSORS_WEIGHTS_NAME), device="cpu"
             )
 
-        elif str(pretrained_model_path).endswith(".ckpt"):
+        #elif str(pretrained_model_path).endswith(".ckpt"):
+        elif pretrained_model_path.joinpath(WEIGHTS_NAME).exists():
             logger.debug(f"loading weights from {pretrained_model_path} ...")
             state_dict = torch.load(
-                pretrained_model_path,
+                pretrained_model_path.joinpath(WEIGHTS_NAME),
+                #pretrained_model_path,
                 map_location="cpu",
                 weights_only=True,
             )
