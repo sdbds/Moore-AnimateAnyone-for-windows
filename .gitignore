@@ -5,3 +5,11 @@ outputs/
 .venv/
 venv/
 huggingface/
+.venv/
+mlruns/
+data/
+
+*.pth
+*.pt
+*.pkl
+*.bin
